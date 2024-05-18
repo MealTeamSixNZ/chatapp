@@ -1,0 +1,15 @@
+{
+  "name": "chatapp",
+  "version": "1.0.0",
+  "description": "app for chatting",
+  "main": "index.js",
+  "scripts": {
+    "server": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "MealTeamSixNZ",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
