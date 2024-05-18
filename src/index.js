@@ -5,16 +5,14 @@ const app = express()
 const port = 3000
 const msgs = ["hallo","tschuss"]
 
-app.use (express.urlencoded())
-app.get (`/`, (req, res) => {
-    res.send('hello world')
-})
+app.use(express.urlencoded())
+app.use(express.static("public"))
 
-app.get (`/msgs`, (req, res) => {
+app.get(`/msgs`, (req, res) => {
     res.send(msgs)
 })
 
-app.post (`/msgs`, (req, res) =>{
+app.post(`/msgs`, (req, res) =>{
     msgs.push(req.body.msg)
     res.send()
 })
