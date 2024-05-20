@@ -1,38 +1,49 @@
 const send = document.getElementById("sendButton")
 const input = document.getElementById("input")
 const messages = document.getElementById("messages")
-send.addEventListener("click", () => {
-    sendMessage()
+send.addEventListener("click", async () => {
+    await sendMessage()
 })
-setInterval(() => {
-    updateMessages()
+setInterval( async () => {
+    await updateMessages()
 }, 1000)
+input.addEventListener("keyup", async (event) => {
+    if (event.target.value.length === 0) {
+        send.disabled = true
+    } else {
+        send.disabled = false
+        if (event.key === "Enter") {
+            await sendMessage()
+        }
+    }
+})
 
-function sendMessage() {
+async function sendMessage() {
     const content = input.value
     input.value = ""
-    fetch("http://localhost:3000/msgs", {
+    send.disabled = true
+    const res = await fetch("http://localhost:3000/msgs", {
         method: "POST", 
-        body: `msg=${content}`,
+        body: JSON.stringify({content:content}),
         headers: {
-            "content-type": "application/x-www-form-urlencoded"
+            "content-type": "application/json"
         }
     })
-    .then(() => {
-        updateMessages()
-    })
+    if (res.ok) {
+        await updateMessages()
+    } else {
+        alert("no.")
+    }
 }
 
-function updateMessages() {
-    fetch("/msgs").then((res) => {
-        res.json().then((msgs) => {
-            messages.replaceChildren()
-            for (const msg of msgs) {
-                const div = document.createElement("div")
-                div.className = "message"
-                div.innerText = msg
-                messages.appendChild(div)
-            }
-        })
-    })
+async function updateMessages() {
+    const res = await fetch("/msgs")
+    const msgs = await res.json()
+    messages.replaceChildren()
+    for (const msg of msgs) {
+        const div = document.createElement("div")
+        div.className = "message"
+        div.innerText = msg.content
+        messages.appendChild(div)
+    }
 }
