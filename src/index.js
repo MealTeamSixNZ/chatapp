@@ -1,22 +1,14 @@
-class Message {
-    datetime
-    content
-    constructor(content) {
-        this.datetime = new Date()
-        this.content = content
-    }
-}
-
+const MessageService = require("./MessageService.js")
 const express = require('express')
 const app = express()
 const port = 3000
-const msgs = [new Message("hallo"), new Message("tschuss")]
+const messageService = new MessageService()
 
 app.use(express.json())
 app.use(express.static("public"))
 
 app.get(`/msgs`, (req, res) => {
-    res.send(msgs)
+    res.send(messageService.getMessages())
 })
 
 // this is where messages are created
@@ -24,11 +16,9 @@ app.post(`/msgs`, (req, res) => {
     if (req.body.content.length === 0) {
         res.status(400).end()
     } else {
-        const msg = new Message(req.body.content)
-        msgs.push(msg)
+        messageService.createMessage(req.body.content)
         res.send()
     }
-    
 })
 
 app.listen(port, () => {
