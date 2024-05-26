@@ -1,16 +1,17 @@
-const Message = require("./Message")
+import Message from "./Message"
 
 class MessageService {
+    messages: Message[] 
     constructor() {
         this.messages = []
     }
     getMessages() {
         return this.messages
     }
-    createMessage(input) {
+    createMessage(input: string) {
         const message = new Message(input)
         this.messages.push(message)
     }
 }
 
-module.exports=MessageService
+export default MessageService

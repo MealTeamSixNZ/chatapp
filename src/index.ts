@@ -1,5 +1,5 @@
-const MessageService = require("./MessageService.js")
-const express = require('express')
+import MessageService from "./MessageService"
+import express from "express"
 const app = express()
 const port = 3000
 const messageService = new MessageService()
