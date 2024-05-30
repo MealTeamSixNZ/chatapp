@@ -1,6 +1,6 @@
-const send = document.getElementById("sendButton")
-const input = document.getElementById("input")
-const messages = document.getElementById("messages")
+const send = document.getElementById("sendButton")! as HTMLButtonElement
+const input = document.getElementById("input")! as HTMLInputElement
+const messages = document.getElementById("messages")!
 send.addEventListener("click", async () => {
     await sendMessage()
 })
@@ -8,7 +8,7 @@ setInterval( async () => {
     await updateMessages()
 }, 1000)
 input.addEventListener("keyup", async (event) => {
-    if (event.target.value.length === 0) {
+    if (input.value.length === 0) {
         send.disabled = true
     } else {
         send.disabled = false

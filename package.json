@@ -2,10 +2,10 @@
   "name": "chatapp",
   "version": "1.0.0",
   "description": "app for chatting",
-  "main": "src/index.js",
+  "main": "dist/backend/index.js",
   "scripts": {
-    "build": "tsc",
-    "server": "tsc && node dist/index.js",
+    "build": "tsc && cp dist/frontend/*.js public/",
+    "server": "tsc && node dist/backend/index.js",
     "test": "jest"
   },
   "author": "MealTeamSixNZ",
