@@ -8,8 +8,8 @@ class MessageService {
     getMessages() {
         return this.messages
     }
-    createMessage(input: string) {
-        const message = new Message(input)
+    createMessage(input: string, sender: string) {
+        const message = new Message(input, sender)
         this.messages.push(message)
     }
 }

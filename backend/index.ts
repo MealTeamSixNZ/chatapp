@@ -2,11 +2,11 @@ import MessageService from "./MessageService"
 import express from "express"
 import cookieParser from "cookie-parser"
 import path from "path"
+import User from "./User"
 const app = express()
-const port = 3000
+const PORT = 3000
 const messageService = new MessageService()
-const USERNAME = "admin"
-const PASSWORD = "admin"
+const users:User[] = [{name:`admin`, id:1, password:`admin`}, {name:'Jesse', id:2, password:"password"}, {name:'Kirtus', id:3, password:"password1"}]
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -27,7 +27,7 @@ app.post(`/msgs`, (req, res) => {
         if (req.body.content.length === 0) {
             res.status(400).end()
         } else {
-            messageService.createMessage(req.body.content)
+            messageService.createMessage(req.body.content, req.cookies.username)
             res.send()
         }
     } else {
@@ -37,12 +37,15 @@ app.post(`/msgs`, (req, res) => {
 
 app.post(`/auth/sign_in`, (req, res) => {
     console.log(req.body)
-    if (req.body.username === USERNAME && req.body.password === PASSWORD) {
-        res.cookie("username", USERNAME)
-        res.redirect("/")
-    } else {
-        res.redirect("/login.html")
+    for (const user of users) {
+        if (req.body.username === user.name && req.body.password === user.password) {
+            res.cookie("username", user.name)
+            res.cookie("password", user.password)
+            res.redirect("/")
+            return
+        }
     }
+    res.redirect("/login.html")
 })
 
 app.get(`/auth/sign_out`, (req, res) => {
@@ -58,8 +61,14 @@ app.get(`/`, (req, res) => {
     }
 })
 function isUserSignedIn(req: express.Request) {
-    return USERNAME === req.cookies?.username
+    for (const user of users) {
+        if (req.cookies.username === user.name) {
+            return true
+        }
+    } 
+    return false
 }
-app.listen(port, () => {
-    console.log(`Example app listening on port http://localhost:${port}`)
+
+app.listen(PORT, () => {
+    console.log(`Example app listening on port http://localhost:${PORT}`)
 })
