@@ -1,5 +1,7 @@
 import MessageService from "./MessageService"
 import express from "express"
+import cookieParser from "cookie-parser"
+import path from "path"
 const app = express()
 const port = 3000
 const messageService = new MessageService()
@@ -9,19 +11,28 @@ const PASSWORD = "admin"
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static("public"))
+app.use(cookieParser())
 
 app.get(`/msgs`, (req, res) => {
-    res.send(messageService.getMessages())
+    if (isUserSignedIn(req)) {
+        res.send(messageService.getMessages())
+    } else {
+        res.status(401).end()
+    }
 })
 
 // this is where messages are created
 app.post(`/msgs`, (req, res) => {
-    if (req.body.content.length === 0) {
-        res.status(400).end()
+    if (isUserSignedIn(req)) {
+        if (req.body.content.length === 0) {
+            res.status(400).end()
+        } else {
+            messageService.createMessage(req.body.content)
+            res.send()
+        }
     } else {
-        messageService.createMessage(req.body.content)
-        res.send()
-    }
+        res.status(401).end()
+    } 
 })
 
 app.post(`/auth/sign_in`, (req, res) => {
@@ -39,6 +50,16 @@ app.get(`/auth/sign_out`, (req, res) => {
     res.redirect("/login.html")
 })
 
+app.get(`/`, (req, res) => {
+    if (isUserSignedIn(req)) {
+        res.sendFile("index.html", {root:path.join(__dirname, "..", "private")})
+    } else {
+        res.redirect("/login.html")
+    }
+})
+function isUserSignedIn(req: express.Request) {
+    return USERNAME === req.cookies?.username
+}
 app.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}`)
 })

@@ -5,18 +5,21 @@
   "main": "dist/backend/index.js",
   "scripts": {
     "build": "tsc && cp dist/frontend/*.js public/",
-    "server": "tsc && node dist/backend/index.js",
+    "server": "ts-node backend/index.ts",
     "test": "jest"
   },
   "author": "MealTeamSixNZ",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "express": "^4.19.2"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
 }
