@@ -4,7 +4,7 @@
   "description": "app for chatting",
   "main": "dist/backend/index.js",
   "scripts": {
-    "build": "tsc && cp dist/frontend/*.js public/",
+    "build": "tsc && copy dist\\frontend\\chat.js public\\chat.js",
     "server": "ts-node backend/index.ts",
     "test": "jest"
   },
