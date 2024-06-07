@@ -27,7 +27,8 @@ app.post(`/msgs`, (req, res) => {
         if (req.body.content.length === 0) {
             res.status(400).end()
         } else {
-            messageService.createMessage(req.body.content, req.cookies.username)
+            const username = getSession(req.cookies.session)
+            messageService.createMessage(req.body.content, username)
             res.send()
         }
     } else {
@@ -39,8 +40,8 @@ app.post(`/auth/sign_in`, (req, res) => {
     console.log(req.body)
     for (const user of users) {
         if (req.body.username === user.name && req.body.password === user.password) {
-            res.cookie("username", user.name)
-            res.cookie("password", user.password)
+            const sessionID = createSession(user.name)
+            res.cookie("session", sessionID)
             res.redirect("/")
             return
         }
@@ -49,7 +50,8 @@ app.post(`/auth/sign_in`, (req, res) => {
 })
 
 app.get(`/auth/sign_out`, (req, res) => {
-    res.clearCookie("username")
+    revokeSession(req.cookies.session)
+    res.clearCookie("session")
     res.redirect("/login.html")
 })
 
@@ -61,12 +63,30 @@ app.get(`/`, (req, res) => {
     }
 })
 function isUserSignedIn(req: express.Request) {
-    for (const user of users) {
-        if (req.cookies.username === user.name) {
-            return true
-        }
-    } 
-    return false
+    return doesSessionExist(req.cookies.session)
+}
+
+const sessions: Map<string, string> = new Map()
+
+function createSession(username:string) {
+    const sessionID = crypto.randomUUID()
+    sessions.set(sessionID, username)
+    return sessionID
+}
+function revokeSession(sessionID:string) {
+    sessions.delete(sessionID)
+}
+function getSession(sessionID:string) {
+    const username = sessions.get(sessionID)
+    if (username == undefined) {
+        throw "invalid session"
+    } else {
+        return username
+    }
+}
+
+function doesSessionExist(sessionID:string){
+    return sessions.has(sessionID)
 }
 
 app.listen(PORT, () => {
