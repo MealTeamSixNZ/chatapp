@@ -4,11 +4,15 @@ import cookieParser from "cookie-parser"
 import path from "path"
 import User from "./User"
 import SessionService from "./SessionService"
+import UserService from "./UserService"
 const app = express()
 const PORT = 3000
 const messageService = new MessageService()
-const users:User[] = [{name:`admin`, id:1, password:`admin`}, {name:'Jesse', id:2, password:"password"}, {name:'Kirtus', id:3, password:"password1"}]
 const sessionService = new SessionService()
+const userService = new UserService()
+userService.create("admin", "admin")
+userService.create("jesse", "password")
+userService.create("kirtus", "password1")
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -40,13 +44,12 @@ app.post(`/msgs`, (req, res) => {
 
 app.post(`/auth/sign_in`, (req, res) => {
     console.log(req.body)
-    for (const user of users) {
-        if (req.body.username === user.name && req.body.password === user.password) {
-            const sessionID = sessionService.create(user.name)
-            res.cookie("session", sessionID)
-            res.redirect("/")
-            return
-        }
+    const user = userService.findByName(req.body.username)
+    if (req.body.password === user.password) {
+        const sessionID = sessionService.create(user.name)
+        res.cookie("session", sessionID)
+        res.redirect("/")
+        return
     }
     res.redirect("/login.html")
 })
