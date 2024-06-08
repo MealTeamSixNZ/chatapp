@@ -1,6 +1,7 @@
 type User = {
     name: string,
-    id: number,
+    id: UserID,
     password: string
 }
 export default User
+export type UserID = number

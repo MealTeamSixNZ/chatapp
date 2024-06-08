@@ -33,8 +33,9 @@ app.post(`/msgs`, (req, res) => {
         if (req.body.content.length === 0) {
             res.status(400).end()
         } else {
-            const username = sessionService.find(req.cookies.session)
-            messageService.createMessage(req.body.content, username)
+            const userID = sessionService.find(req.cookies.session)
+            const user = userService.find(userID)
+            messageService.createMessage(req.body.content, user.name)
             res.send()
         }
     } else {
@@ -46,7 +47,7 @@ app.post(`/auth/sign_in`, (req, res) => {
     console.log(req.body)
     const user = userService.findByName(req.body.username)
     if (req.body.password === user.password) {
-        const sessionID = sessionService.create(user.name)
+        const sessionID = sessionService.create(user.id)
         res.cookie("session", sessionID)
         res.redirect("/")
         return

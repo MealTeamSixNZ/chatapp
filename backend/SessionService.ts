@@ -1,6 +1,7 @@
 const SESSION_LOG = "sessions.json"
 import { json } from "express"
 import fs from "fs"
+import User, { UserID } from "./User"
 
 class SessionService {
     private readsSessionsFromFile():void {
@@ -18,14 +19,14 @@ class SessionService {
         fs.writeFileSync(SESSION_LOG, jason)
     }
     
-    private sessions: Map<string, string>
+    private sessions: Map<SessionID, UserID>
     constructor() {
        this.sessions = new Map()
        this.readsSessionsFromFile()
     }
-    create(username: string):SessionID {
+    create(userID: UserID):SessionID {
         const sessionID = crypto.randomUUID()
-        this.sessions.set(sessionID, username)
+        this.sessions.set(sessionID, userID)
         this.writeSessionsToFile()
         return sessionID
     }
@@ -33,12 +34,12 @@ class SessionService {
         this.sessions.delete(sessionID)
         this.writeSessionsToFile()
     }
-    find(sessionID: SessionID):string {
-        const username = this.sessions.get(sessionID)
-        if (username == undefined) {
+    find(sessionID: SessionID):UserID {
+        const userID = this.sessions.get(sessionID)
+        if (userID == undefined) {
             throw "invalid session"
         } else {
-            return username
+            return userID
         }
     }
     exists(sessionID: SessionID):boolean {
