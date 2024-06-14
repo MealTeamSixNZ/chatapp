@@ -11,6 +11,7 @@ class MessageService {
     createMessage(input: string, sender: string) {
         const message = new Message(input, sender)
         this.messages.push(message)
+        return message
     }
 }
 

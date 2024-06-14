@@ -4,9 +4,6 @@ const messages = document.getElementById("messages")!
 send.addEventListener("click", async () => {
     await sendMessage()
 })
-setInterval( async () => {
-    await updateMessages()
-}, 1000)
 input.addEventListener("keyup", async (event) => {
     if (input.value.length === 0) {
         send.disabled = true
@@ -41,9 +38,28 @@ async function updateMessages() {
     const msgs = await res.json()
     messages.replaceChildren()
     for (const msg of msgs) {
-        const div = document.createElement("div")
-        div.className = "message"
-        div.innerText = msg.content
+        const div = buildMessageHTML(msg)
         messages.appendChild(div)
     }
 }
+
+function buildMessageHTML(msg:any) {
+    const div = document.createElement("div")
+    div.className = "message"
+    div.innerText = msg.content
+    return div
+}
+
+//websocket stuff
+const ws = new WebSocket("ws://localhost:3000/ws")
+ws.addEventListener("open", () => {
+    console.log("Connected")
+})
+ws.addEventListener("message",  (event:MessageEvent<string>) => {
+    const data = JSON.parse(event.data)
+    if (data.type = "new message") {
+        const message = data.message
+        const div = buildMessageHTML(message)
+        messages.appendChild(div)
+    }
+})

@@ -1,12 +1,18 @@
 import MessageService from "./MessageService"
-import express from "express"
+import express, { json } from "express"
 import cookieParser from "cookie-parser"
 import path from "path"
 import User from "./User"
 import SessionService from "./SessionService"
 import UserService from "./UserService"
+import http from "http"
+import { WebSocketServer } from "ws"
+import Message from "./Message"
+
+
 const app = express()
 const PORT = 3000
+const server = http.createServer(app)
 const messageService = new MessageService()
 const sessionService = new SessionService()
 const userService = new UserService()
@@ -35,8 +41,9 @@ app.post(`/msgs`, (req, res) => {
         } else {
             const userID = sessionService.find(req.cookies.session)
             const user = userService.find(userID)
-            messageService.createMessage(req.body.content, user.name)
+            const msg = messageService.createMessage(req.body.content, user.name)
             res.send()
+            broadcastMessage(msg)
         }
     } else {
         res.status(401).end()
@@ -71,7 +78,24 @@ app.get(`/`, (req, res) => {
 function isUserSignedIn(req: express.Request) {
     return sessionService.exists(req.cookies.session)
 }
+// websocket stuff
 
-app.listen(PORT, () => {
+const wss = new WebSocketServer({server:server, path:"/ws"})
+wss.on("connection", () => {
+    console.log("Connection Established...")
+})
+
+server.listen(PORT, () => {
     console.log(`Example app listening on port http://localhost:${PORT}`)
 })
+
+function broadcast(payload:any) {
+    for (const ws of wss.clients) {
+        ws.send(JSON.stringify(payload))
+    }
+}
+function broadcastMessage(message:Message) {
+    broadcast({
+        type:"new message", message:message
+    }) 
+}
