@@ -2,3 +2,4 @@
 /dist
 /public/chat.js
 /sessions.json
+/database.db

@@ -1,11 +1,15 @@
+import IUserService from "./IUserService";
 import User from "./User";
  
-class UserService {
+class UserService implements IUserService {
     private users:User[]
     private maxID:number
     constructor() {
         this.users = []
         this.maxID = 0
+    }
+    setup(): Promise<void> {
+        throw new Error("Method not implemented.");
     }
     create(name:string, password:string):User {
         const ID = this.maxID
