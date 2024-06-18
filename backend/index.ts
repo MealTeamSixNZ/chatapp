@@ -25,10 +25,10 @@ import DBUserService from "./DBUserService"
     const messageService = new MessageService()
     const sessionService = new SessionService()
     const userService:IUserService = new DBUserService(db)
-    userService.setup()
-    userService.create("admin", "admin")
-    userService.create("jesse", "password")
-    userService.create("kirtus", "password1")
+    await userService.setup()
+    // await userService.create("admin", "admin")
+    // await userService.create("jesse", "password")
+    // await userService.create("kirtus", "password1")
 
     app.use(express.json())
     app.use(express.urlencoded({extended:true}))
@@ -44,13 +44,13 @@ import DBUserService from "./DBUserService"
     })
 
     // this is where messages are created
-    app.post(`/msgs`, (req, res) => {
+    app.post(`/msgs`, async (req, res) => {
         if (isUserSignedIn(req)) {
             if (req.body.content.length === 0) {
                 res.status(400).end()
             } else {
                 const userID = sessionService.find(req.cookies.session)
-                const user = userService.find(userID)
+                const user = await userService.find(userID)
                 const msg = messageService.createMessage(req.body.content, user.name)
                 res.send()
                 broadcastMessage(msg)
@@ -60,9 +60,9 @@ import DBUserService from "./DBUserService"
         } 
     })
 
-    app.post(`/auth/sign_in`, (req, res) => {
+    app.post(`/auth/sign_in`, async (req, res) => {
         console.log(req.body)
-        const user = userService.findByName(req.body.username)
+        const user = await userService.findByName(req.body.username)
         if (req.body.password === user.password) {
             const sessionID = sessionService.create(user.id)
             res.cookie("session", sessionID)

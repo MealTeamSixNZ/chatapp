@@ -9,9 +9,9 @@ class UserService implements IUserService {
         this.maxID = 0
     }
     setup(): Promise<void> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve()
     }
-    create(name:string, password:string):User {
+    create(name:string, password:string):Promise<User> {
         const ID = this.maxID
         this.maxID += 1
         const user = {
@@ -20,42 +20,43 @@ class UserService implements IUserService {
             password: password
         }
         this.users.push(user)
-        return user
+        return Promise.resolve(user)
     }
-    find(userID:number):User {
+    find(userID:number):Promise<User> {
         const user = this.users.find((user) => {
             return user.id === userID
         })
         if (user == undefined) {
             throw "not found"
         } else {
-            return user
+            return Promise.resolve(user)
         }
     }
-    findByName(name:string):User {
+    findByName(name:string):Promise<User> {
         const user = this.users.find((user) => {
             return name === user.name
         })
         if (user == undefined) {
             throw "not found"
         } else {
-            return user
+            return Promise.resolve(user)
         }       
     }
-    exists(userID:number):boolean {
+    exists(userID:number):Promise<boolean> {
         const userFound = this.users.some((user) => {
             return user.id === userID
         })
-        return userFound
+        return Promise.resolve(userFound)
     }
-    delete(userID:number):void {
+    delete(userID:number):Promise<void> {
         const userIndex = this.users.findIndex((user) => {
             return user.id === userID
         })
         if (userIndex === -1) {
-            return
+            return Promise.resolve()
         } else {
             this.users.splice(userIndex, 1)
+            return Promise.resolve()
         }
     }
 }

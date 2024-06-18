@@ -16,21 +16,33 @@ class DBUserService implements IUserService {
             user_ID INTEGER NOT NULL UNIQUE, 
             PRIMARY KEY("user_id" AUTOINCREMENT))`)
         }
-    create(name: string, password: string): User {
-        throw new Error("Method not implemented.");
+    async create(name: string, password: string): Promise<User> {
+        const sql = `INSERT into users (name, password) VALUES (?, ?)`
+        await this.db.run(sql, name, password)
+        return this.findByName(name)
     }
-    find(userID: number): User {
-        throw new Error("Method not implemented.");
+    async find(userID: number): Promise<User> {
+        const sql = `SELECT user_ID, name, password FROM users WHERE user_ID = ?` 
+        const result = await this.db.get(sql, userID)
+        return {
+            id:result.user_ID, name:result.name, password:result.password
+        }
     }
-    findByName(name: string): User {
-        throw new Error("Method not implemented.");
+    async findByName(name: string): Promise<User> {
+        const sql = `SELECT user_ID, name, password FROM users WHERE name = ?`
+        const result = await this.db.get(sql, name)
+        return {
+            id:result.user_ID, name:result.name, password:result.password
+        }
     }
-    exists(userID: number): boolean {
-        throw new Error("Method not implemented.");
+    async exists(userID: number): Promise<boolean> {
+        const sql = `SELECT 1 FROM users WHERE user_ID = ?`
+        const result = await this.db.get(sql, userID)
+        return result != undefined
     }
-    delete(userID: number): void {
-        throw new Error("Method not implemented.");
+    async delete(userID: number): Promise<void> {
+        const sql = `DELETE FROM users WHERE user_ID = ?`
+        await this.db.run(sql, userID)
     }
-
 }
 export default DBUserService
