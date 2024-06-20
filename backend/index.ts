@@ -12,6 +12,7 @@ import sqlite3 from "sqlite3"
 import { open } from "sqlite"
 import IUserService from "./IUserService"
 import DBUserService from "./DBUserService"
+import ISessionService from "./ISessionService"
 
 (async () => {
     const db = await open({
@@ -23,9 +24,10 @@ import DBUserService from "./DBUserService"
     const PORT = 3000
     const server = http.createServer(app)
     const messageService = new MessageService()
-    const sessionService = new SessionService()
+    const sessionService:ISessionService = new SessionService()
     const userService:IUserService = new DBUserService(db)
     await userService.setup()
+    await sessionService.setup()
     // await userService.create("admin", "admin")
     // await userService.create("jesse", "password")
     // await userService.create("kirtus", "password1")
@@ -35,8 +37,8 @@ import DBUserService from "./DBUserService"
     app.use(express.static("public"))
     app.use(cookieParser())
 
-    app.get(`/msgs`, (req, res) => {
-        if (isUserSignedIn(req)) {
+    app.get(`/msgs`, async (req, res) => {
+        if (await isUserSignedIn(req)) {
             res.send(messageService.getMessages())
         } else {
             res.status(401).end()
@@ -45,11 +47,11 @@ import DBUserService from "./DBUserService"
 
     // this is where messages are created
     app.post(`/msgs`, async (req, res) => {
-        if (isUserSignedIn(req)) {
+        if (await isUserSignedIn(req)) {
             if (req.body.content.length === 0) {
                 res.status(400).end()
             } else {
-                const userID = sessionService.find(req.cookies.session)
+                const userID = await sessionService.find(req.cookies.session)
                 const user = await userService.find(userID)
                 const msg = messageService.createMessage(req.body.content, user.name)
                 res.send()
@@ -64,7 +66,7 @@ import DBUserService from "./DBUserService"
         console.log(req.body)
         const user = await userService.findByName(req.body.username)
         if (req.body.password === user.password) {
-            const sessionID = sessionService.create(user.id)
+            const sessionID = await sessionService.create(user.id)
             res.cookie("session", sessionID)
             res.redirect("/")
             return
@@ -72,21 +74,21 @@ import DBUserService from "./DBUserService"
         res.redirect("/login.html")
     })
 
-    app.get(`/auth/sign_out`, (req, res) => {
-        sessionService.revoke(req.cookies.session)
+    app.get(`/auth/sign_out`, async (req, res) => {
+        await sessionService.revoke(req.cookies.session)
         res.clearCookie("session")
         res.redirect("/login.html")
     })
 
-    app.get(`/`, (req, res) => {
-        if (isUserSignedIn(req)) {
+    app.get(`/`, async (req, res) => {
+        if (await isUserSignedIn(req)) {
             res.sendFile("index.html", {root:path.join(__dirname, "..", "private")})
         } else {
             res.redirect("/login.html")
         }
     })
-    function isUserSignedIn(req: express.Request) {
-        return sessionService.exists(req.cookies.session)
+    async function isUserSignedIn(req: express.Request) {
+        return await sessionService.exists(req.cookies.session)
     }
     // websocket stuff
 

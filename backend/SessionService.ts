@@ -2,8 +2,10 @@ const SESSION_LOG = "sessions.json"
 import { json } from "express"
 import fs from "fs"
 import User, { UserID } from "./User"
+import ISessionService from "./ISessionService"
 
-class SessionService {
+
+class SessionService implements ISessionService {
     private readsSessionsFromFile():void {
         if (!fs.existsSync(SESSION_LOG)) {
             return
@@ -24,26 +26,30 @@ class SessionService {
        this.sessions = new Map()
        this.readsSessionsFromFile()
     }
-    create(userID: UserID):SessionID {
+    create(userID: UserID):Promise<SessionID> {
         const sessionID = crypto.randomUUID()
         this.sessions.set(sessionID, userID)
         this.writeSessionsToFile()
-        return sessionID
+        return Promise.resolve(sessionID)
     }
-    revoke(sessionID: SessionID):void {
+    revoke(sessionID: SessionID):Promise<void> {
         this.sessions.delete(sessionID)
         this.writeSessionsToFile()
+        return Promise.resolve()
     }
-    find(sessionID: SessionID):UserID {
+    find(sessionID: SessionID):Promise<UserID> {
         const userID = this.sessions.get(sessionID)
         if (userID == undefined) {
             throw "invalid session"
         } else {
-            return userID
+            return Promise.resolve(userID)
         }
     }
-    exists(sessionID: SessionID):boolean {
-        return this.sessions.has(sessionID)
+    exists(sessionID: SessionID):Promise<boolean> {
+        return Promise.resolve(this.sessions.has(sessionID))
+    }
+    setup():Promise<void> {
+        return Promise.resolve()
     }
 }
 export type SessionID=string
