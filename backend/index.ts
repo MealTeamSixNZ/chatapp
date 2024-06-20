@@ -13,6 +13,7 @@ import { open } from "sqlite"
 import IUserService from "./IUserService"
 import DBUserService from "./DBUserService"
 import ISessionService from "./ISessionService"
+import DBSessionService from "./DBSessionService"
 
 (async () => {
     const db = await open({
@@ -24,7 +25,7 @@ import ISessionService from "./ISessionService"
     const PORT = 3000
     const server = http.createServer(app)
     const messageService = new MessageService()
-    const sessionService:ISessionService = new SessionService()
+    const sessionService:ISessionService = new DBSessionService(db)
     const userService:IUserService = new DBUserService(db)
     await userService.setup()
     await sessionService.setup()

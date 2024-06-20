@@ -11,10 +11,11 @@ class DBUserService implements IUserService {
         async setup() {
             await this.db.exec(
             `CREATE TABLE IF NOT EXISTS users (
-            name TEXT NOT NULL UNIQUE COLLATE NOCASE, 
-            password TEXT NOT NULL, 
-            user_ID INTEGER NOT NULL UNIQUE, 
-            PRIMARY KEY("user_id" AUTOINCREMENT))`)
+                name TEXT NOT NULL UNIQUE COLLATE NOCASE, 
+                password TEXT NOT NULL, 
+                user_ID INTEGER NOT NULL UNIQUE, 
+                PRIMARY KEY("user_id" AUTOINCREMENT)
+            )`)
         }
     async create(name: string, password: string): Promise<User> {
         const sql = `INSERT into users (name, password) VALUES (?, ?)`
