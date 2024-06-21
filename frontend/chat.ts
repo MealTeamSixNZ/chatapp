@@ -63,3 +63,4 @@ ws.addEventListener("message",  (event:MessageEvent<string>) => {
         messages.appendChild(div)
     }
 })
+updateMessages()

@@ -1,13 +1,15 @@
 const MessageService = require("./MessageService")
 
-test('check MessageService starts empty', () => {
+test('check MessageService starts empty', async () => {
     const sut = new MessageService()
-    expect(sut.getMessages()).toEqual([])
+    await sut.setup()
+    expect(await sut.getMessages()).toEqual([])
 })
 
-test('check adding message gets added to MessageService', () => {
+test('check adding message gets added to MessageService', async () => {
     const sut = new MessageService()
-    sut.createMessage("New Message!")
-    expect(sut.getMessages()).toHaveLength(1)
-    expect(sut.getMessages()[0].content).toEqual("New Message!")
+    await sut.setup()
+    await sut.createMessage("New Message!")
+    expect(await sut.getMessages()).toHaveLength(1)
+    expect(await sut.getMessages()[0].content).toEqual("New Message!")
 })

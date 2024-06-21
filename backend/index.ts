@@ -14,6 +14,8 @@ import IUserService from "./IUserService"
 import DBUserService from "./DBUserService"
 import ISessionService from "./ISessionService"
 import DBSessionService from "./DBSessionService"
+import IMessageService from "./IMessageService"
+import DBMessageService from "./DBMessageService"
 
 (async () => {
     const db = await open({
@@ -24,11 +26,12 @@ import DBSessionService from "./DBSessionService"
     const app = express()
     const PORT = 3000
     const server = http.createServer(app)
-    const messageService = new MessageService()
+    const messageService:IMessageService = new DBMessageService(db)
     const sessionService:ISessionService = new DBSessionService(db)
     const userService:IUserService = new DBUserService(db)
     await userService.setup()
     await sessionService.setup()
+    await messageService.setup()
     // await userService.create("admin", "admin")
     // await userService.create("jesse", "password")
     // await userService.create("kirtus", "password1")
@@ -40,7 +43,7 @@ import DBSessionService from "./DBSessionService"
 
     app.get(`/msgs`, async (req, res) => {
         if (await isUserSignedIn(req)) {
-            res.send(messageService.getMessages())
+            res.send(await messageService.getMessages())
         } else {
             res.status(401).end()
         }
@@ -54,7 +57,7 @@ import DBSessionService from "./DBSessionService"
             } else {
                 const userID = await sessionService.find(req.cookies.session)
                 const user = await userService.find(userID)
-                const msg = messageService.createMessage(req.body.content, user.name)
+                const msg = await messageService.createMessage(req.body.content, user.id)
                 res.send()
                 broadcastMessage(msg)
             }
