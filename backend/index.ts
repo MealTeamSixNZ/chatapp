@@ -68,14 +68,16 @@ import DBMessageService from "./DBMessageService"
 
     app.post(`/auth/sign_in`, async (req, res) => {
         console.log(req.body)
-        const user = await userService.findByName(req.body.username)
-        if (req.body.password === user.password) {
-            const sessionID = await sessionService.create(user.id)
-            res.cookie("session", sessionID)
-            res.redirect("/")
-            return
-        }
-        res.redirect("/login.html")
+        try { 
+            const user = await userService.findByName(req.body.username)
+            if (req.body.password === user.password) {
+                const sessionID = await sessionService.create(user.id)
+                res.cookie("session", sessionID)
+                res.redirect("/")
+                return
+            }
+            res.redirect("/login.html")
+        } catch {res.redirect("/login.html")}
     })
 
     app.get(`/auth/sign_out`, async (req, res) => {

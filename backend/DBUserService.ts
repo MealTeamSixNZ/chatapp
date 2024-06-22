@@ -32,9 +32,11 @@ class DBUserService implements IUserService {
     async findByName(name: string): Promise<User> {
         const sql = `SELECT user_ID, name, password FROM users WHERE name = ?`
         const result = await this.db.get(sql, name)
-        return {
+        if (result == undefined) {
+            throw "undefined"
+        } else { return {
             id:result.user_ID, name:result.name, password:result.password
-        }
+        }}
     }
     async exists(userID: number): Promise<boolean> {
         const sql = `SELECT 1 FROM users WHERE user_ID = ?`
