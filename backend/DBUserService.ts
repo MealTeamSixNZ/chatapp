@@ -2,6 +2,7 @@ import IUserService from "./IUserService";
 import User from "./User";
 import { Database } from "sqlite";
 import sqlite3 from "sqlite3";
+import { hashPassword } from "./helpers";
 
 class DBUserService implements IUserService {
     private db:Database<sqlite3.Database, sqlite3.Statement>
@@ -19,7 +20,7 @@ class DBUserService implements IUserService {
         }
     async create(name: string, password: string): Promise<User> {
         const sql = `INSERT into users (name, password) VALUES (?, ?)`
-        await this.db.run(sql, name, password)
+        await this.db.run(sql, name, await hashPassword(password))
         return this.findByName(name)
     }
     async find(userID: number): Promise<User> {

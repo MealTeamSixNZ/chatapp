@@ -16,6 +16,7 @@ import ISessionService from "./ISessionService"
 import DBSessionService from "./DBSessionService"
 import IMessageService from "./IMessageService"
 import DBMessageService from "./DBMessageService"
+import { hashPassword } from "./helpers"
 
 (async () => {
     const db = await open({
@@ -70,7 +71,7 @@ import DBMessageService from "./DBMessageService"
         console.log(req.body)
         try { 
             const user = await userService.findByName(req.body.username)
-            if (req.body.password === user.password) {
+            if (await hashPassword(req.body.password) === user.password) {
                 const sessionID = await sessionService.create(user.id)
                 res.cookie("session", sessionID)
                 res.redirect("/")
