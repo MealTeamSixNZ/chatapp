@@ -2,9 +2,9 @@
   "name": "chatapp",
   "version": "1.0.0",
   "description": "app for chatting",
-  "main": "dist/backend/index.js",
+  "private": "true",
   "scripts": {
-    "build": "tsc && copy dist\\frontend\\chat.js public\\chat.js",
+    "build": "webpack",
     "server": "ts-node backend/index.ts",
     "test": "jest"
   },
@@ -13,6 +13,8 @@
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
     "ws": "^8.17.0"
@@ -21,9 +23,13 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
+    "@types/react-dom": "^18.3.0",
     "@types/ws": "^8.5.10",
     "jest": "^29.7.0",
+    "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
   }
 }
