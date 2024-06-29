@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
-import React from 'react';
+import React, { StrictMode } from 'react';
+import ChatsApp from './ChatsApp';
 
 const root = createRoot(document.getElementById('app') as HTMLDivElement)
-root.render(<h1>Hello World</h1>)
+root.render(<StrictMode><ChatsApp /></StrictMode>)

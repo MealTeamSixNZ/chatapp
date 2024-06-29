@@ -5,12 +5,18 @@
   "private": "true",
   "scripts": {
     "build": "webpack",
+    "watch": "webpack --watch",
     "server": "ts-node backend/index.ts",
     "test": "jest"
   },
   "author": "MealTeamSixNZ",
   "license": "ISC",
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@fontsource/roboto": "^5.0.13",
+    "@mui/icons-material": "^5.15.21",
+    "@mui/material": "^5.15.21",
     "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
     "react": "^18.3.1",
